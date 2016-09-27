@@ -1,0 +1,193 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parrot AR Drone</title>
+    <script src="nodecopter-client.js" type="text/javascript" charset="utf-8"></script>
+    <script src="socket.js"></script>
+    <script src="jquery-2.2.3.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="screen.css">
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <!--<img id="imageStream" src="http://192.168.1.3:12356"/>-->
+
+    <div id="fullcontainer">
+
+        <div id="buttonscontainer">
+            <div>
+                <div class="btn-group-vertical btn-group-lg" role="group" id="updown">
+                    <button type="button" class="btn btn-default" id="gu">Go up (Z)</button>
+                    <button type="button" class="btn btn-default" id="gd">Go down (S)</button>
+                </div>
+
+                <div class="btn-group btn-group-lg" role="group" id="turnleftright">
+                    <button type="button" class="btn btn-default" id="tl">Turn left (Q)</button>
+                    <button type="button" class="btn btn-default" id="tr">Turn right (D)</button>
+                </div>
+
+                <div class="btn-group btn-group-lg" role="group" id="goleftright">
+                    <button type="button" class="btn btn-default" id="gl">
+                        Go left (<span class="glyphicon glyphicon-arrow-left"></span>)
+                    </button>
+                    <button type="button" class="btn btn-default" id="gr">
+                        Go right (<span class="glyphicon glyphicon-arrow-right"></span>)
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="btn-group-vertical btn-group-lg" role="group" id="forback">
+                <button type="button" class="btn btn-default" id="gf">
+                    Go forward (<span class="glyphicon glyphicon-arrow-up"></span>)
+                </button>
+                <button type="button" class="btn btn-default" id="gb">
+                    Go backward (<span class="glyphicon glyphicon-arrow-down"></span>)
+                </button>
+            </div>
+
+
+            <div class="btn-group btn-group-lg" role="group" id="basicbuttons">
+                <button type="button" class="btn btn-success" id="to">Take off (R)</button>
+                <button type="button" class="btn btn-danger" id="st">Stop (Space)</button>
+                <button type="button" class="btn btn-default" id="l">Land (F)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var button = document.getElementById('snapshot');
+        button.addEventListener('click', function (e) {
+            var canvas = document.getElementById('myCanvas');
+            var dataURL = canvas.toDataURL('image/png');
+            button.href = dataURL;
+        });
+        $(document).keyup(function (event) {
+            //console.log(event.which);
+
+            switch (event.which) {
+                case 90:
+                    Goup();
+                    break;
+                case 83:
+                    Godown();
+                    break;
+                case 81:
+                    Turnleft();
+                    break;
+                case 68:
+                    Turnright();
+                    break;
+                case 37:
+                    Goleft();
+                    break;
+                case 39:
+                    Goright();
+                    break;
+                case 38:
+                    Goforward();
+                    break;
+                case 40:
+                    Gobackward();
+                    break;
+                case 82:
+                    Takeoff();
+                    break;
+                case 70:
+                    Land();
+                    break;
+                case 32:
+                    Stop();
+                    break;
+                default:
+                    Stop();
+            }
+
+        });
+
+        //var stream = new NodecopterStream(document.getElementById("droneStream"));
+        $("#to").click(Takeoff);
+        $("#l").click(Land);
+        $("#tl").click(Turnleft);
+        $("#tr").click(Turnright);
+        $("#gl").click(Goleft);
+        $("#gr").click(Goright);
+        $("#gf").click(Goforward);
+        $("#gb").click(Gobackward);
+        $("#gu").click(Goup);
+        $("#gd").click(Godown);
+        $("#st").click(Stop);
+
+
+        var socket;
+
+        function Takeoff() {
+            Sendmessage("takeoff");
+        }
+        function Land() {
+            Sendmessage("land");
+        }
+        function Turnleft() {
+            Sendmessage("turnleft");
+        }
+        function Turnright() {
+            Sendmessage("turnright");
+        }
+        function Goleft() {
+            Sendmessage("goleft");
+        }
+        function Goright() {
+            Sendmessage("goright");
+        }
+        function Goforward() {
+            Sendmessage("goforward");
+        }
+        function Gobackward() {
+            Sendmessage("gobackward");
+        }
+        function Goup() {
+            Sendmessage("goup");
+        }
+        function Godown() {
+            Sendmessage("godown");
+        }
+        function Stop() {
+            Sendmessage("stop");
+        }
+
+
+        function Sendmessage(msg) {
+            socket.emit('message', msg);
+        }
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        var start = false;
+        $(document).ready(function () {
+            socket = io.connect("http://192.168.1.3:3000");
+            socket.on('connect', function (msg) {
+                console.log('connected');
+            });
+            var img = new Image;
+            img.onload = function () {
+
+                ctx.drawImage(this, 0, 0);
+                start = true;
+                drawVideofeed();
+            }
+            img.src = "http://192.168.1.3:12356";
+            img.on
+
+            //var img = document.getElementById("imageStream");
+            //ctx.drawImage(img, 0, 0);
+        });
+        function drawVideofeed() {
+            while (start) {
+                ctx.drawImage(this, 0, 0);
+            }
+        }
+
+
+    </script>
+</body>
+</html>
